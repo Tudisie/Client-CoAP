@@ -31,3 +31,8 @@ def isValidPort(port):
     if port < 1024 or port > 65353:
         return False
     return True
+
+def isValidCommand(command):
+    if len(command) == 0:
+        return False
+    return True

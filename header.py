@@ -3,8 +3,9 @@ import datetime
 import random
 
 from functions import *
+import interface
 
-def createHeader():
+def createHeader(username, passwd, request_type):
     # creating the entire header
     header = []
     header.append(header_FirstByte())
@@ -15,7 +16,7 @@ def createHeader():
     for o in header_Token():
         header.append(o)
     header.append(header_SeparatingByte())
-    for o in header_Payload():
+    for o in header_Payload(username, passwd, request_type):
         header.append(o)
 
     # In acest moment avem header-ul complet (este o lista de stringuri, fiecare string reprezentand un sir de 8 "biti"
@@ -84,16 +85,17 @@ def header_SeparatingByte():
 
     return biti_delimitare
 
-def header_Payload():
+def header_Payload(username, passwd, request_type):
     # --------------- payload -------------------- #
-    username = "Tudisie"
-    passwd = "mypasswd"
 
-    request_type = "ls -l"
-    command, parameters = request_type.split("-", 1)
+    if request_type.count('-') >= 1:
+        command, parameters = request_type.split("-", 1)
+        parameters.replace(" ", "")
+        parameters = "-" + parameters
+    else:
+        command = request_type
+        parameters = "None"
     command.replace(" ", "")
-    parameters.replace(" ", "")
-    parameters = "-" + parameters
 
     request = {
         "username": username,
