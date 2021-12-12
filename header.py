@@ -7,22 +7,29 @@ import interface
 
 def createHeader(username, passwd, request_type):
     # creating the entire header
-    header = []
-    header.append(header_FirstByte())
-    header.append(header_SecondByte())
+    firstByte = header_FirstByte()
+    secondByte = header_SecondByte()
     msgID = header_MessageID()
-    header.append(msgID[0])
-    header.append(msgID[1])
-    for o in header_Token():
-        header.append(o)
-    header.append(header_SeparatingByte())
-    for o in header_Payload(username, passwd, request_type):
-        header.append(o)
+    token = header_Token()
+    separatingByte = header_SeparatingByte()
+    payload = header_Payload(username, passwd, request_type)
 
+    header = []
+    header.append(firstByte)
+    header.append(secondByte)
+    for octet in msgID:
+        header.append(octet)
+    for octet in token:
+        header.append(octet)
+    header.append(separatingByte)
+    for octet in payload:
+        header.append(octet)
+
+    print(header)
     # In acest moment avem header-ul complet (este o lista de stringuri, fiecare string reprezentand un sir de 8 "biti"
     # Vom transforma fiecare string intr-un caracter corespunzator
+
     header_string = bits2string(header)
-    print(header_string)
 
     return header_string
 
@@ -59,8 +66,8 @@ def header_MessageID():
     global messageID
     messageID = increment16bits(messageID)
     messageID_string = decimalToBinaryString(messageID, 16)  # e pe 16 biti
-    messageID_octet1 = messageID_string[0:7]
-    messageID_octet2 = messageID_string[8:15]
+    messageID_octet1 = messageID_string[0:8]
+    messageID_octet2 = messageID_string[8:16]
 
     return [messageID_octet1, messageID_octet2]
 

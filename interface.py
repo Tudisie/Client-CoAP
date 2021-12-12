@@ -90,7 +90,8 @@ class MainWindow(QWidget):
         headerString = createHeader("Tudisika", "noParolo", self.command.text())
 
         # Sending the packet to the server:
-        receiver.s.sendto(bytes(headerString, encoding="utf-8"), (str(self.dip.text()), int(self.dport.text())))
+        bytesToSend = bytes(headerString, encoding="latin_1")
+        receiver.s.sendto(bytesToSend, (str(self.dip.text()), int(self.dport.text())))
 
     def button_clicked_connectServer(self):
         if self.connectedToServer == False:
