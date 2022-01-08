@@ -1,127 +1,233 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow,QHBoxLayout, QPushButton, QVBoxLayout, QDesktopWidget, QLineEdit, QGridLayout, QPlainTextEdit, QWidget, QLabel
-from PyQt5.QtCore import QTimer
-from PyQt5.QtGui import QFont
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-from header import *
-from functions import *
-from receiver import *
-import receiver
+class MainWindow(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(640, 715)
+        self.groupBoxServerConnection = QtWidgets.QGroupBox(Dialog)
+        self.groupBoxServerConnection.setGeometry(QtCore.QRect(10, 20, 311, 211))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.groupBoxServerConnection.setFont(font)
+        self.groupBoxServerConnection.setObjectName("groupBoxServerConnection")
+        self.groupBoxResponse = QtWidgets.QGroupBox(Dialog)
+        self.groupBoxResponse.setGeometry(QtCore.QRect(330, 240, 301, 461))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.groupBoxResponse.setFont(font)
+        self.groupBoxResponse.setObjectName("groupBoxResponse")
+        self.console_response = QtWidgets.QTextBrowser(self.groupBoxResponse)
+        self.console_response.setGeometry(QtCore.QRect(10, 30, 281, 381))
+        self.console_response.setObjectName("console_response")
+        self.button_clearResponse = QtWidgets.QPushButton(self.groupBoxResponse)
+        self.button_clearResponse.setGeometry(QtCore.QRect(10, 420, 281, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.button_clearResponse.setFont(font)
+        self.button_clearResponse.setObjectName("button_clearResponse")
+        self.groupBoxSignIn = QtWidgets.QGroupBox(Dialog)
+        self.groupBoxSignIn.setGeometry(QtCore.QRect(10, 240, 311, 211))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.groupBoxSignIn.setFont(font)
+        self.groupBoxSignIn.setObjectName("groupBoxSignIn")
+        self.label_command = QtWidgets.QLabel(Dialog)
+        self.label_command.setGeometry(QtCore.QRect(340, 60, 81, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_command.setFont(font)
+        self.label_command.setObjectName("label_command")
+        self.label_destPort = QtWidgets.QLabel(Dialog)
+        self.label_destPort.setGeometry(QtCore.QRect(30, 140, 81, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_destPort.setFont(font)
+        self.label_destPort.setObjectName("label_destPort")
+        self.input_destPort = QtWidgets.QLineEdit(Dialog)
+        self.input_destPort.setGeometry(QtCore.QRect(120, 140, 191, 22))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.input_destPort.setFont(font)
+        self.input_destPort.setObjectName("input_destPort")
+        self.label_password = QtWidgets.QLabel(Dialog)
+        self.label_password.setGeometry(QtCore.QRect(30, 320, 91, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_password.setFont(font)
+        self.label_password.setObjectName("label_password")
+        self.label_destIP = QtWidgets.QLabel(Dialog)
+        self.label_destIP.setGeometry(QtCore.QRect(30, 60, 81, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_destIP.setFont(font)
+        self.label_destIP.setObjectName("label_destIP")
+        self.label_msgType = QtWidgets.QLabel(Dialog)
+        self.label_msgType.setGeometry(QtCore.QRect(340, 100, 81, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_msgType.setFont(font)
+        self.label_msgType.setObjectName("label_msgType")
+        self.label_username = QtWidgets.QLabel(Dialog)
+        self.label_username.setGeometry(QtCore.QRect(30, 280, 81, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_username.setFont(font)
+        self.label_username.setObjectName("label_username")
+        self.input_box_msgType = QtWidgets.QComboBox(Dialog)
+        self.input_box_msgType.setGeometry(QtCore.QRect(430, 100, 191, 22))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.input_box_msgType.setFont(font)
+        self.input_box_msgType.setAutoFillBackground(True)
+        self.input_box_msgType.setObjectName("input_box_msgType")
+        self.input_box_msgType.addItem("")
+        self.input_box_msgType.addItem("")
+        self.groupBoxSendRequest = QtWidgets.QGroupBox(Dialog)
+        self.groupBoxSendRequest.setGeometry(QtCore.QRect(330, 20, 301, 211))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.groupBoxSendRequest.setFont(font)
+        self.groupBoxSendRequest.setObjectName("groupBoxSendRequest")
+        self.button_displayAllCommands = QtWidgets.QPushButton(self.groupBoxSendRequest)
+        self.button_displayAllCommands.setGeometry(QtCore.QRect(10, 120, 281, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.button_displayAllCommands.setFont(font)
+        self.button_displayAllCommands.setObjectName("button_displayAllCommands")
+        self.button_sendPackage = QtWidgets.QPushButton(Dialog)
+        self.button_sendPackage.setGeometry(QtCore.QRect(340, 180, 281, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.button_sendPackage.setFont(font)
+        self.button_sendPackage.setObjectName("button_sendPackage")
+        self.label_srcPort = QtWidgets.QLabel(Dialog)
+        self.label_srcPort.setGeometry(QtCore.QRect(30, 100, 69, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_srcPort.setFont(font)
+        self.label_srcPort.setObjectName("label_srcPort")
+        self.button_connect = QtWidgets.QPushButton(Dialog)
+        self.button_connect.setGeometry(QtCore.QRect(30, 180, 281, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.button_connect.setFont(font)
+        self.button_connect.setObjectName("button_connect")
+        self.input_destIP = QtWidgets.QLineEdit(Dialog)
+        self.input_destIP.setGeometry(QtCore.QRect(120, 60, 191, 22))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.input_destIP.setFont(font)
+        self.input_destIP.setObjectName("input_destIP")
+        self.input_command = QtWidgets.QLineEdit(Dialog)
+        self.input_command.setGeometry(QtCore.QRect(430, 60, 191, 22))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.input_command.setFont(font)
+        self.input_command.setObjectName("input_command")
+        self.button_register = QtWidgets.QPushButton(Dialog)
+        self.button_register.setGeometry(QtCore.QRect(30, 400, 281, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.button_register.setFont(font)
+        self.button_register.setObjectName("button_register")
+        self.input_password = QtWidgets.QLineEdit(Dialog)
+        self.input_password.setGeometry(QtCore.QRect(120, 320, 191, 22))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.input_password.setFont(font)
+        self.input_password.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.input_password.setObjectName("input_password")
+        self.groupBoxCommandPrompt = QtWidgets.QGroupBox(Dialog)
+        self.groupBoxCommandPrompt.setGeometry(QtCore.QRect(10, 460, 311, 241))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.groupBoxCommandPrompt.setFont(font)
+        self.groupBoxCommandPrompt.setObjectName("groupBoxCommandPrompt")
+        self.console_commandPrompt = QtWidgets.QTextBrowser(self.groupBoxCommandPrompt)
+        self.console_commandPrompt.setGeometry(QtCore.QRect(10, 30, 281, 161))
+        self.console_commandPrompt.setObjectName("console_commandPrompt")
+        self.button_clearCmd = QtWidgets.QPushButton(self.groupBoxCommandPrompt)
+        self.button_clearCmd.setGeometry(QtCore.QRect(10, 200, 281, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.button_clearCmd.setFont(font)
+        self.button_clearCmd.setObjectName("button_clearCmd")
+        self.button_login = QtWidgets.QPushButton(Dialog)
+        self.button_login.setGeometry(QtCore.QRect(30, 360, 281, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.button_login.setFont(font)
+        self.button_login.setObjectName("button_login")
+        self.input_srcPort = QtWidgets.QLineEdit(Dialog)
+        self.input_srcPort.setGeometry(QtCore.QRect(120, 100, 191, 22))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.input_srcPort.setFont(font)
+        self.input_srcPort.setObjectName("input_srcPort")
+        self.input_username = QtWidgets.QLineEdit(Dialog)
+        self.input_username.setGeometry(QtCore.QRect(120, 280, 191, 22))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.input_username.setFont(font)
+        self.input_username.setObjectName("input_username")
+        self.groupBoxSendRequest.raise_()
+        self.groupBoxServerConnection.raise_()
+        self.groupBoxResponse.raise_()
+        self.groupBoxSignIn.raise_()
+        self.label_command.raise_()
+        self.label_destPort.raise_()
+        self.input_destPort.raise_()
+        self.label_password.raise_()
+        self.label_destIP.raise_()
+        self.label_msgType.raise_()
+        self.label_username.raise_()
+        self.input_box_msgType.raise_()
+        self.button_sendPackage.raise_()
+        self.label_srcPort.raise_()
+        self.button_connect.raise_()
+        self.input_destIP.raise_()
+        self.input_command.raise_()
+        self.button_register.raise_()
+        self.input_password.raise_()
+        self.groupBoxCommandPrompt.raise_()
+        self.button_login.raise_()
+        self.input_srcPort.raise_()
+        self.input_username.raise_()
 
-class MainWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.title = "CoAP Client"
-        self.width = 480
-        self.height = 800
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-        self.connectedToServer = False
-
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle(self.title)
-        self.resize(self.width, self.height)
-        self.center()
-
-        self.timerButtonDisabled = 0
-        self.timer = QTimer(self)
-        #adding action to timer
-        self.timer.timeout.connect(self.counter)
-        #updating the timer every 100ms
-        self.timer.start(100)
-
-
-        self.sendButton = QPushButton("Send Package", self)
-        self.sendButton.clicked.connect(self.button_clicked_sendPackage)
-
-        #Connection Layout
-
-        self.label1 = QLabel("dest. IP:", self)
-        self.dip = QLineEdit("192.168.1.106", self)
-
-        self.label2 = QLabel("src. port:", self)
-        self.sport = QLineEdit("10001", self)
-
-        self.label3 = QLabel("dest. port:", self)
-        self.dport = QLineEdit("10010",self)
-
-        self.connectButton = QPushButton("Connect", self)
-        self.connectButton.clicked.connect(self.button_clicked_connectServer)
-
-        grid1 = QGridLayout()
-        grid1.setSpacing(10)
-        grid1.addWidget(self.label1, 1, 0)
-        grid1.addWidget(self.dip, 1, 1)
-        grid1.addWidget(self.label2, 2, 0)
-        grid1.addWidget(self.sport, 2, 1)
-        grid1.addWidget(self.label3, 3, 0)
-        grid1.addWidget(self.dport, 3, 1)
-        grid1.addWidget(self.connectButton, 4, 0, 1, 2)
-
-        #Sending Package Layout
-
-        self.labelCommand = QLabel("Command:", self)
-        self.command = QLineEdit(self)
-
-        grid2 = QGridLayout()
-        grid2.addWidget(self.labelCommand, 1, 0)
-        grid2.addWidget(self.command, 1, 1)
-        grid2.addWidget(self.sendButton, 2, 0, 1, 2)
-
-        vbox = QVBoxLayout()
-        vbox.addLayout(grid1)
-        vbox.addLayout(grid2)
-
-        #Console Outputs
-        self.plainText = QPlainTextEdit()
-        self.plainText.setReadOnly(True)
-        self.plainText.setFixedHeight(200)
-        self.plainText.appendPlainText("Command Prompt!")
-
-        vbox.addWidget(self.plainText)
-
-        self.setLayout(vbox)
-
-        self.show()
-
-    def button_clicked_sendPackage(self):
-        global s
-        self.timerButtonDisabled = 10
-        headerString = createHeader("Tudisika", "noParolo", self.command.text())
-
-        # Sending the packet to the server:
-        bytesToSend = bytes(headerString, encoding="latin_1")
-        receiver.s.sendto(bytesToSend, (str(self.dip.text()), int(self.dport.text())))
-
-    def button_clicked_connectServer(self):
-        if self.connectedToServer == False:
-            #check the DIP format
-            failure = False
-            if isValidIP(self.dip.text()) == False:
-                self.plainText.appendPlainText("Invalid format for DIP")
-                failure = True
-            if isValidPort(1053) == False:
-                self.plainText.appendPlainText("Violation of Reserved Port")
-                failure = True
-            if failure == False:
-                self.connectedToServer = True
-                self.plainText.appendPlainText("Connected to the server")
-                create_socket(self.sport.text())
-            else:
-                self.plainText.appendPlainText("Failed to connect to the server")
-        else:
-            self.plainText.appendPlainText("Already connected to a server!")
-
-
-    def counter(self):
-        if self.timerButtonDisabled:
-            self.timerButtonDisabled -= 1
-            self.sendButton.setEnabled(False)
-        else:
-            self.sendButton.setEnabled(True)
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "CoAP Client"))
+        self.groupBoxServerConnection.setTitle(_translate("Dialog", "1. Server Connection"))
+        self.groupBoxResponse.setTitle(_translate("Dialog", "Response"))
+        self.console_response.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:7.8pt;\"><br /></p></body></html>"))
+        self.button_clearResponse.setText(_translate("Dialog", "Clear"))
+        self.groupBoxSignIn.setTitle(_translate("Dialog", "2. Sign In"))
+        self.label_command.setText(_translate("Dialog", "Command:"))
+        self.label_destPort.setText(_translate("Dialog", "Dest. port:"))
+        self.label_password.setText(_translate("Dialog", "Password:"))
+        self.label_destIP.setText(_translate("Dialog", "Dest. IP:"))
+        self.label_msgType.setText(_translate("Dialog", "Msg. type:"))
+        self.label_username.setText(_translate("Dialog", "Username:"))
+        self.input_box_msgType.setItemText(0, _translate("Dialog", "Confirmable"))
+        self.input_box_msgType.setItemText(1, _translate("Dialog", "Non-confirmable"))
+        self.groupBoxSendRequest.setTitle(_translate("Dialog", "3. Send Request"))
+        self.button_displayAllCommands.setText(_translate("Dialog", "Display All Commands"))
+        self.button_sendPackage.setText(_translate("Dialog", "Send Package"))
+        self.label_srcPort.setText(_translate("Dialog", "Src. port:"))
+        self.button_connect.setText(_translate("Dialog", "Connect"))
+        self.button_register.setText(_translate("Dialog", "Register"))
+        self.groupBoxCommandPrompt.setTitle(_translate("Dialog", "Command Prompt"))
+        self.console_commandPrompt.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:7.8pt;\"><br /></p></body></html>"))
+        self.button_clearCmd.setText(_translate("Dialog", "Clear Console"))
+        self.button_login.setText(_translate("Dialog", "Login"))
