@@ -28,7 +28,7 @@ def isValidIP(ip):
     return validFormat
 
 def isValidPort(port):
-    if port < 1024 or port > 65353:
+    if int(port) < 1024 or int(port) > 65353:
         return False
     return True
 

@@ -1,9 +1,31 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from header import *
+from functions import *
+import receiver
+
+
+commandList = ["cd", "ls", "pwd", "readText", "run","newFile", "newDir", "rm", "copy", "paste", "write", "append"]
+commandInfo = [
+".. / PATH",
+"[-l]",
+"",
+"filename.ext",
+"filename.exe",
+"filename.ext",
+"dirname",
+"filename.ext / dirname",
+"filename.ext",
+"",
+"filename.ext",
+"filename.ext",
+]
+
+
 
 class MainWindow(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(640, 715)
+        Dialog.resize(640, 755)
         self.groupBoxServerConnection = QtWidgets.QGroupBox(Dialog)
         self.groupBoxServerConnection.setGeometry(QtCore.QRect(10, 20, 311, 211))
         font = QtGui.QFont()
@@ -11,16 +33,16 @@ class MainWindow(object):
         self.groupBoxServerConnection.setFont(font)
         self.groupBoxServerConnection.setObjectName("groupBoxServerConnection")
         self.groupBoxResponse = QtWidgets.QGroupBox(Dialog)
-        self.groupBoxResponse.setGeometry(QtCore.QRect(330, 240, 301, 461))
+        self.groupBoxResponse.setGeometry(QtCore.QRect(330, 330, 301, 421))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.groupBoxResponse.setFont(font)
         self.groupBoxResponse.setObjectName("groupBoxResponse")
         self.console_response = QtWidgets.QTextBrowser(self.groupBoxResponse)
-        self.console_response.setGeometry(QtCore.QRect(10, 30, 281, 381))
+        self.console_response.setGeometry(QtCore.QRect(10, 30, 281, 341))
         self.console_response.setObjectName("console_response")
         self.button_clearResponse = QtWidgets.QPushButton(self.groupBoxResponse)
-        self.button_clearResponse.setGeometry(QtCore.QRect(10, 420, 281, 28))
+        self.button_clearResponse.setGeometry(QtCore.QRect(10, 380, 281, 28))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.button_clearResponse.setFont(font)
@@ -83,23 +105,26 @@ class MainWindow(object):
         self.input_box_msgType.addItem("")
         self.input_box_msgType.addItem("")
         self.groupBoxSendRequest = QtWidgets.QGroupBox(Dialog)
-        self.groupBoxSendRequest.setGeometry(QtCore.QRect(330, 20, 301, 211))
+        self.groupBoxSendRequest.setGeometry(QtCore.QRect(330, 20, 301, 301))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.groupBoxSendRequest.setFont(font)
         self.groupBoxSendRequest.setObjectName("groupBoxSendRequest")
         self.button_displayAllCommands = QtWidgets.QPushButton(self.groupBoxSendRequest)
-        self.button_displayAllCommands.setGeometry(QtCore.QRect(10, 120, 281, 28))
+        self.button_displayAllCommands.setGeometry(QtCore.QRect(10, 220, 281, 28))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.button_displayAllCommands.setFont(font)
         self.button_displayAllCommands.setObjectName("button_displayAllCommands")
-        self.button_sendPackage = QtWidgets.QPushButton(Dialog)
-        self.button_sendPackage.setGeometry(QtCore.QRect(340, 180, 281, 28))
+        self.button_sendPackage = QtWidgets.QPushButton(self.groupBoxSendRequest)
+        self.button_sendPackage.setGeometry(QtCore.QRect(10, 260, 281, 28))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.button_sendPackage.setFont(font)
         self.button_sendPackage.setObjectName("button_sendPackage")
+        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.groupBoxSendRequest)
+        self.plainTextEdit.setGeometry(QtCore.QRect(10, 110, 281, 101))
+        self.plainTextEdit.setObjectName("plainTextEdit")
         self.label_srcPort = QtWidgets.QLabel(Dialog)
         self.label_srcPort.setGeometry(QtCore.QRect(30, 100, 69, 21))
         font = QtGui.QFont()
@@ -138,16 +163,16 @@ class MainWindow(object):
         self.input_password.setEchoMode(QtWidgets.QLineEdit.Password)
         self.input_password.setObjectName("input_password")
         self.groupBoxCommandPrompt = QtWidgets.QGroupBox(Dialog)
-        self.groupBoxCommandPrompt.setGeometry(QtCore.QRect(10, 460, 311, 241))
+        self.groupBoxCommandPrompt.setGeometry(QtCore.QRect(10, 460, 311, 291))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.groupBoxCommandPrompt.setFont(font)
         self.groupBoxCommandPrompt.setObjectName("groupBoxCommandPrompt")
         self.console_commandPrompt = QtWidgets.QTextBrowser(self.groupBoxCommandPrompt)
-        self.console_commandPrompt.setGeometry(QtCore.QRect(10, 30, 281, 161))
+        self.console_commandPrompt.setGeometry(QtCore.QRect(10, 30, 281, 211))
         self.console_commandPrompt.setObjectName("console_commandPrompt")
         self.button_clearCmd = QtWidgets.QPushButton(self.groupBoxCommandPrompt)
-        self.button_clearCmd.setGeometry(QtCore.QRect(10, 200, 281, 28))
+        self.button_clearCmd.setGeometry(QtCore.QRect(10, 250, 281, 28))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.button_clearCmd.setFont(font)
@@ -182,7 +207,6 @@ class MainWindow(object):
         self.label_msgType.raise_()
         self.label_username.raise_()
         self.input_box_msgType.raise_()
-        self.button_sendPackage.raise_()
         self.label_srcPort.raise_()
         self.button_connect.raise_()
         self.input_destIP.raise_()
@@ -193,6 +217,23 @@ class MainWindow(object):
         self.button_login.raise_()
         self.input_srcPort.raise_()
         self.input_username.raise_()
+
+        # Variables
+        self.connectedToServer = False
+        self.input_destPort.setText('10010')
+        self.input_srcPort.setText('10001')
+        self.input_destIP.setText('192.168.1.179')
+        self.userID = ""
+        self.password = ""
+
+        # Connecting controls to functions
+        self.button_connect.clicked.connect(self.ConnectToServer)
+        self.button_register.clicked.connect(self.Register)
+        self.button_login.clicked.connect(self.Login)
+        self.button_sendPackage.clicked.connect(self.SendPackage)
+        self.button_clearCmd.clicked.connect(self.ClearCommandPrompt)
+        self.button_clearResponse.clicked.connect(self.ClearResponse)
+        self.button_displayAllCommands.clicked.connect(self.DisplayAllCommands)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -231,3 +272,54 @@ class MainWindow(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:7.8pt;\"><br /></p></body></html>"))
         self.button_clearCmd.setText(_translate("Dialog", "Clear Console"))
         self.button_login.setText(_translate("Dialog", "Login"))
+
+    def ConnectToServer(self):
+        if self.connectedToServer == False:
+            # check the DIP format
+            failure = False
+            if isValidIP(self.input_destIP.text()) == False:
+                self.console_commandPrompt.append("Invalid format for DIP")
+                failure = True
+            if isValidPort(self.input_srcPort.text()) == False or isValidPort(self.input_destPort.text()) == False:
+                self.console_commandPrompt.append("Violation of Reserved Port")
+                failure = True
+            if failure == False:
+                self.connectedToServer = True
+                self.console_commandPrompt.append("Connected to the server")
+                receiver.create_socket(self.input_srcPort.text())
+            else:
+                self.console_commandPrompt.append("Failed to connect to the server")
+        else:
+            self.console_commandPrompt.append("Already connected to a server!")
+
+    def Register(self): # Method code 0.22
+        headerString = createHeader(self.input_username.text(), self.input_password.text(), "register", self)
+
+        # Sending the packet to the server:
+        bytesToSend = bytes(headerString, encoding="latin_1")
+        receiver.s.sendto(bytesToSend, (str(self.input_destIP.text()), int(self.input_destPort.text())))
+
+
+    def Login(self):
+        self.userID = self.input_username.text()
+        self.password = self.input_password.text()
+        self.console_commandPrompt.append("Logged in!")
+
+    def SendPackage(self):
+        headerString = createHeader(self.userID, self.password, self.input_command.text(), self)
+
+        # Sending the packet to the server:
+        bytesToSend = bytes(headerString, encoding="latin_1")
+        receiver.s.sendto(bytesToSend, (str(self.input_destIP.text()), int(self.input_destPort.text())))
+
+    def ClearCommandPrompt(self):
+        self.console_commandPrompt.clear()
+
+    def ClearResponse(self):
+        self.console_response.clear()
+
+    def DisplayAllCommands(self):
+        self.console_response.append("All the possible commands are:")
+        for i in range(0, len(commandList)):
+            self.console_response.append("- " + commandList[i] + "\t" + commandInfo[i])
+        self.console_response.append("\n")

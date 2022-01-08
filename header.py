@@ -3,16 +3,16 @@ import datetime
 import random
 
 from functions import *
-import interface
 
-def createHeader(username, passwd, request_type):
+
+def createHeader(username, passwd, request_type, interfaceObj):
     # creating the entire header
-    firstByte = header_FirstByte()
-    secondByte = header_SecondByte()
+    firstByte = header_FirstByte(interfaceObj.input_box_msgType.currentText())
+    secondByte = header_SecondByte(request_type)
     msgID = header_MessageID()
-    token = header_Token()
+    token = header_Token(interfaceObj.input_box_msgType.currentText())
     separatingByte = header_SeparatingByte()
-    payload = header_Payload(username, passwd, request_type)
+    payload = header_Payload(username, passwd, request_type, interfaceObj)
 
     header = []
     header.append(firstByte)
@@ -34,16 +34,15 @@ def createHeader(username, passwd, request_type):
     return header_string
 
 
-def header_FirstByte():
+def header_FirstByte(boxValue):
     # --------------- first-byte --------------- #
     # VER: 01
     octet1 = "01"
 
     # Type: CON (00), NON (01), ACK (10), RES (11)
-    Type = "CON"
-    if Type == "CON":
+    if boxValue == "Confirmable":
         octet1 += "00"
-    elif Type == "NON":
+    elif boxValue == "Non-confirmable":
         octet1 += "01"
 
     # Token Length
@@ -52,10 +51,30 @@ def header_FirstByte():
 
     return octet1
 
-def header_SecondByte():
+def header_SecondByte(comanda):
     # -------------- second-byte ---------------- #
     # Request/Response Code
-    octet2 = "00000001"
+    if comanda.count(' ') >= 1:
+        tipComanda = comanda.split(' ')[0]
+    else:
+        tipComanda = comanda
+
+    print(tipComanda)
+    print(comanda)
+    octet2 = ""
+
+    if comanda == "":
+        octet2 = "00000000" # EMPTY
+    elif tipComanda == "run":
+        octet2 = "00010101" # RUN
+    elif tipComanda == "cd" or tipComanda == "ls" or tipComanda == "copy" or tipComanda == "readText" or tipComanda == "pwd":
+        octet2 = "00000001" # GET
+    elif tipComanda == "paste" or tipComanda == "newFile" or tipComanda == "newDir" or tipComanda == "write" or tipComanda == "append":
+        octet2 = "00000010" # POST
+    elif tipComanda == "rm":
+        octet2 = "00000100" # DELETE
+    elif tipComanda == "register":
+        octet2 = "00010110" # REGISTER
 
     return octet2
 
@@ -71,10 +90,10 @@ def header_MessageID():
 
     return [messageID_octet1, messageID_octet2]
 
-def header_Token():
+def header_Token(boxValue):
     # --------------- token ---------------------- #
     token = []
-    octet1 = header_FirstByte()
+    octet1 = header_FirstByte(boxValue)
     tokenLength = int(octet1[4] + octet1[5] + octet1[6] + octet1[7], 2)
     # este impartit pe octeti (este generat random -> rol in securitatea comunicatiei)
     for i in range(tokenLength):
@@ -92,13 +111,16 @@ def header_SeparatingByte():
 
     return biti_delimitare
 
-def header_Payload(username, passwd, request_type):
+def header_Payload(username, passwd, request_type, interfaceObj):
     # --------------- payload -------------------- #
 
     if request_type.count('-') >= 1:
         command, parameters = request_type.split("-", 1)
         parameters.replace(" ", "")
         parameters = "-" + parameters
+    elif request_type.count(' ') >= 1:
+        command, parameters = request_type.split(" ", 1)
+        parameters.replace(" ", "")
     else:
         command = request_type
         parameters = "None"
