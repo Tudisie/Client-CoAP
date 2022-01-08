@@ -75,6 +75,10 @@ def header_SecondByte(comanda):
         octet2 = "00000100" # DELETE
     elif tipComanda == "register":
         octet2 = "00010110" # REGISTER
+    elif tipComanda == "msg":
+        octet2 = "00010111" # MESSAGE
+    # Method code 0.22 : register
+    # Method code 0.23 : msg
 
     return octet2
 
@@ -125,6 +129,11 @@ def header_Payload(username, passwd, request_type, interfaceObj):
         command = request_type
         parameters = "None"
     command.replace(" ", "")
+
+    if command == 'write' or command == 'append':
+        parameters += " " + interfaceObj.plainTextEdit.toPlainText()
+    elif command == 'msg':
+        parameters = interfaceObj.plainTextEdit.toPlainText()
 
     request = {
         "username": username,

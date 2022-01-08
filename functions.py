@@ -1,3 +1,4 @@
+from PyQt5 import QtGui, QtCore
 
 def decimalToBinaryString(number,nbits):
     straux = str(bin(number))[2:]
@@ -36,3 +37,13 @@ def isValidCommand(command):
     if len(command) == 0:
         return False
     return True
+
+def palette_theme():
+    palette = QtGui.QPalette()
+    palette.setColor(QtGui.QPalette.Window, QtGui.QColor(207, 167, 167))
+    palette.setColor(QtGui.QPalette.WindowText, QtGui.QColor(51, 19, 19))
+    palette.setColor(QtGui.QPalette.Base, QtGui.QColor(255, 230, 230))
+    palette.setColor(QtGui.QPalette.Text, QtGui.QColor(100, 0, 0))
+    palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(77, 0, 0).lighter())
+    palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.white)
+    return palette
