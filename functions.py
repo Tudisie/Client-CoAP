@@ -17,6 +17,17 @@ def string2bits(s):
 def bits2string(b):
     return ''.join([chr(int(x, 2)) for x in b])
 
+def getBytesListFromString(list):
+    new_list = []
+    forbidden_chars = "[]' "
+    for element in list:
+        new_element = element
+        for char in forbidden_chars:
+            new_element = new_element.replace(char, "")
+        new_list.append(new_element)
+
+    return new_list
+
 def isValidIP(ip):
     validFormat = True
     if ip.count('.') != 3:

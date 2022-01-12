@@ -25,7 +25,7 @@ def createHeader(username, passwd, request_type, interfaceObj):
     for octet in payload:
         header.append(octet)
 
-    print(header)
+    #print(header)
     # In acest moment avem header-ul complet (este o lista de stringuri, fiecare string reprezentand un sir de 8 "biti"
     # Vom transforma fiecare string intr-un caracter corespunzator
 
@@ -59,8 +59,8 @@ def header_SecondByte(comanda):
     else:
         tipComanda = comanda
 
-    print(tipComanda)
-    print(comanda)
+    #print(tipComanda)
+    #print(comanda)
     octet2 = ""
 
     if comanda == "":

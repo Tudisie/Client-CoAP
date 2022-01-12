@@ -37,7 +37,7 @@ class MainWindow(object):
         self.connectedToServer = False
         self.input_destPort.setText('10010')
         self.input_srcPort.setText('10001')
-        self.input_destIP.setText('192.168.1.105')
+        self.input_destIP.setText('192.168.0.192')
         self.input_username.setText('tudisie')
         self.input_password.setText('matiz4life')
         self.userID = ""
@@ -229,6 +229,12 @@ class MainWindow(object):
             else:
                 self.button_login.setEnabled(True)
                 self.button_register.setEnabled(True)
+        if receiver.receivedData != None:
+            #To be continued...
+            self.console_response.append(('Content: ' + str(receiver.payload['content'])))
+            self.console_response.append("Error: " +  str(receiver.payload['error']))
+            self.console_response.append("Command: " +  str(receiver.payload['command']) + "\n\n")
+            receiver.receivedData = None
 
     def ConnectToServer(self):
         if self.connectedToServer == False:
