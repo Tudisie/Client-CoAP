@@ -8,18 +8,32 @@ running = False
 s = None
 receivedData = None
 
+receivedAcknowledge = False
+receivedCON = False
+
 global version, type, tokenLength, clss, code, msgID, token, payload
 
+
 def checkMessage(list):
-    global version, type, tokenLength, clss, code, msgID, token, payload
+    global version, type, tokenLength, clss, code, msgID, token, payload, receivedAcknowledge, receivedCON
     octet1 = list[0]
     version = octet1[0:2]
     type = octet1[2:4]
     tokenLength = octet1[4:8]
+
+    print("------------################## TIPUL MESAJULUI PRIMIT = " + str(type) + " ####################--------------------")
+    if type == "10":
+        receivedAcknowledge = True
+        receivedCON = False
+    elif type == "00":
+        receivedAcknowledge = False
+        receivedCON = True
+    else:
+        receivedAcknowledge = False
+        receivedCON = False
+
     if version != "01":
         print("Eroare: Wrong version of CoAP!")
-    if type[0] == '0':
-        print("Eroare: Message type must be ACK/RES")
     if int(tokenLength[0]) & (int(tokenLength[1]) | int(tokenLength[2]) | int(tokenLength[3])):
         print("Eroare: Token Length exceeds the maximum value")
 

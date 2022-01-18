@@ -2,6 +2,7 @@ import json
 import datetime
 import random
 
+import interface
 from functions import *
 
 
@@ -39,14 +40,17 @@ def header_FirstByte(boxValue):
     # VER: 01
     octet1 = "01"
 
-    # Type: CON (00), NON (01), ACK (10), RES (11)
-    if boxValue == "Confirmable":
-        octet1 += "00"
-    elif boxValue == "Non-confirmable":
-        octet1 += "01"
+    if interface.willSendAck == False:
+        # Type: CON (00), NON (01), ACK (10), RES (11)
+        if boxValue == "Confirmable":
+            octet1 += "00"
+        elif boxValue == "Non-confirmable":
+            octet1 += "01"
+    else:
+        octet1 += "10"
 
     # Token Length
-    tokenLength = 4  # must be between (0-8) #HIGH SECURITY - 8,  LOW SECURITY - 2
+    tokenLength = 4
     octet1 += decimalToBinaryString(tokenLength, 4)
 
     return octet1
@@ -59,8 +63,6 @@ def header_SecondByte(comanda):
     else:
         tipComanda = comanda
 
-    #print(tipComanda)
-    #print(comanda)
     octet2 = ""
 
     if comanda == "":

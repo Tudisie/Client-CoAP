@@ -22,6 +22,10 @@ commandInfo = [
     "filename.ext      [text]",
 ]
 
+timerReceiveAck = 0
+timerReceiveCon = 0
+nrAsteptari = 0
+willSendAck = False
 
 class MainWindow(object):
     def __init__(self, dialog):
@@ -259,6 +263,18 @@ class MainWindow(object):
             self.ReceivePackage()
             receiver.receivedData = None
 
+        global timerReceiveAck
+        if timerReceiveAck > 20000:
+            timerReceiveAck = 0
+        else:
+            timerReceiveAck += 100
+
+        global timerReceiveCon
+        if timerReceiveCon > 20000:
+            timerReceiveCon = 0
+        else:
+            timerReceiveCon += 100
+
     def ConnectToServer(self):
         if self.connectedToServer == False:
             # check the DIP format
@@ -292,13 +308,60 @@ class MainWindow(object):
         self.console_commandPrompt.append("Logged in!")
 
     def SendPackage(self):
+        print("########################### Am intrat #######################")
         if checkValidFunction(self.input_command.text()) == True:
             headerString = createHeader(self.userID, self.password, self.input_command.text(), self)
             # Sending the packet to the server:
             bytesToSend = bytes(headerString, encoding="latin_1")
-            receiver.s.sendto(bytesToSend, (str(self.input_destIP.text()), int(self.input_destPort.text())))
+            if self.input_box_msgType.currentText() == "Confirmable":  # Sending a CONfirmable message
+                print("------------------------------ Am trimis primul CON ------------------------------")
+                receiver.s.sendto(bytesToSend, (str(self.input_destIP.text()), int(self.input_destPort.text())))
+                global timerReceiveAck, nrAsteptari
+                timerReceiveAck = 0
+                nrAsteptari = 0
+                while receiver.receivedAcknowledge == False:
+                    if timerReceiveAck >= 5000:
+                        receiver.s.sendto(bytesToSend, (str(self.input_destIP.text()), int(self.input_destPort.text())))
+                        nrAsteptari += 1
+                        timerReceiveAck = 0
+                        self.console_commandPrompt.append("Resending the package -> try: " + str(nrAsteptari))
+                    if nrAsteptari == 5:
+                        nrAsteptari = 0
+                        break
+
+                print("------------------------------ Nr asteptari = " + str(nrAsteptari) + " -------------------------------- ")
+                if receiver.receivedAcknowledge == True:
+                    receiver.receivedAcknowledge = False
+                    global timerReceiveCon
+                    timerReceiveCon = 0
+                    while receiver.receivedCON == False:
+                        if timerReceiveCon >= 5000:
+                            timerReceiveCon = 0
+                            print("------------------------------- Nu s-a primit CON-ul (raspunsul de la server) de dupa ACK -------------------------")
+                            break
+
+
+                    if receiver.receivedCON == True:
+                        receiver.receivedCON = False
+                        global willSendAck
+                        willSendAck = True
+                        print(" *************************888 Trimit ACK ****************")
+                        headerString = createHeader(self.userID, self.password, self.input_command.text(), self) # reconstruim header-ul ca sa se puna "10" la type message
+                        bytesToSend = bytes(headerString, encoding="latin_1")
+                        receiver.s.sendto(bytesToSend, (str(self.input_destIP.text()), int(self.input_destPort.text())))
+                        willSendAck = False
+                    else:
+                        self.console_commandPrompt.append("Didn't receive the package! :( ")
+
+                else:
+                    self.console_commandPrompt.append("Destination unreachable. Command could not be sent!")
+
+            else:  # Sending a NON-confirmable message
+                receiver.s.sendto(bytesToSend, (str(self.input_destIP.text()), int(self.input_destPort.text())))
         else:
             self.console_commandPrompt.append("Invalid command!")
+
+        print("########################## AM IESIT ! ###############################")
 
     def ReceivePackage(self):
         # payload este de tip json:
@@ -318,40 +381,44 @@ class MainWindow(object):
             else:
                 self.console_commandPrompt.append("Message received from server")
 
-            before_text = ""
-            if command == 'cd':
-                before_text = "Entered folder."
-            elif command == 'ls':
-                before_text = "All files are:\n"
-                content = content.replace(",", "\n")
-                content = content.replace("[", "")
-                content = content.replace("]", "")
-                content = content.replace(" ", "")
-                content = content.replace("'", "")
-            elif command == 'pwd':
-                content = "Root" + content.split('Root')[1]
-                before_text = "Path: "
-            elif command == 'msg':
-                before_text = 'Message delivered.'
-            elif command == 'readText':
-                before_text = 'Display text from file:\n'
-            elif command == 'run':
-                before_text = 'Run an executable file.'
-            elif command == 'newFile':
-                before_text = 'Created a new file.'
-            elif command == 'newDir':
-                before_text = 'Created a new directory.'
-            elif command == 'rm':
-                before_text = 'Removed a file.'
-            elif command == 'copy':
-                before_text = 'Copied a file.'
-            elif command == 'paste':
-                before_text = 'Pasted a file.'
-            elif command == 'write':
-                before_text = 'Wrote text to a file.'
-            elif command == 'append':
-                before_text = 'Appended text to a file.'
-            self.console_response.append(before_text + content)
+
+            if receiver.type == "10":
+                self.console_commandPrompt.append("Received Acknowledge!")
+            else:
+                before_text = ""
+                if command == 'cd':
+                    before_text = "Entered folder."
+                elif command == 'ls':
+                    before_text = "All files are:\n"
+                    content = content.replace(",", "\n")
+                    content = content.replace("[", "")
+                    content = content.replace("]", "")
+                    content = content.replace(" ", "")
+                    content = content.replace("'", "")
+                elif command == 'pwd':
+                    #content = "Root" + content.split('Root')[1]
+                    before_text = "Path: "
+                elif command == 'msg':
+                    before_text = 'Message delivered.'
+                elif command == 'readText':
+                    before_text = 'Display text from file:\n'
+                elif command == 'run':
+                    before_text = 'Run an executable file.'
+                elif command == 'newFile':
+                    before_text = 'Created a new file.'
+                elif command == 'newDir':
+                    before_text = 'Created a new directory.'
+                elif command == 'rm':
+                    before_text = 'Removed a file.'
+                elif command == 'copy':
+                    before_text = 'Copied a file.'
+                elif command == 'paste':
+                    before_text = 'Pasted a file.'
+                elif command == 'write':
+                    before_text = 'Wrote text to a file.'
+                elif command == 'append':
+                    before_text = 'Appended text to a file.'
+                self.console_response.append(before_text + content)
 
         self.console_response.append("")
 
